@@ -1,116 +1,131 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
-         http://maven.apache.org/xsd/maven-4.0.0.xsd">
-
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.uavmec</groupId>
     <artifactId>uav-mec-simulation</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
-
     <name>UAV-MEC CloudSim Simulation</name>
 
     <properties>
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-
-        <cloudsim.version>7.1.2</cloudsim.version>
-        <junit.version>4.13.2</junit.version>
+        <cloudsim.version>6.5.3</cloudsim.version>
     </properties>
 
-    <repositories>
-        <repository>
-            <id>central</id>
-            <name>Maven Central</name>
-            <url>https://repo1.maven.org/maven2/</url>
-        </repository>
-    </repositories>
-
-
     <dependencies>
-
-        <!-- CloudSim Plus (Correct Version for Your Code) -->
+        <!-- CloudSim Plus -->
         <dependency>
             <groupId>org.cloudsimplus</groupId>
             <artifactId>cloudsim-plus</artifactId>
-            <version>7.1.2</version>
+            <version>${cloudsim.version}</version>
         </dependency>
 
-        <!-- CSV Export -->
-        <dependency>
-            <groupId>com.opencsv</groupId>
-            <artifactId>opencsv</artifactId>
-            <version>5.8</version>
-        </dependency>
-
-        <!-- YAML Configuration -->
+        <!-- SnakeYAML for YAML configuration -->
         <dependency>
             <groupId>org.yaml</groupId>
             <artifactId>snakeyaml</artifactId>
             <version>2.0</version>
         </dependency>
 
-        <!-- JSON Processing -->
+        <!-- JSON processing -->
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
             <version>2.10.1</version>
         </dependency>
 
-        <!-- Logging -->
+        <!-- CSV processing -->
+        <dependency>
+            <groupId>com.opencsv</groupId>
+            <artifactId>opencsv</artifactId>
+            <version>5.8</version>
+        </dependency>
+
+        <!-- SLF4J API (no logback - avoid version conflict) -->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>2.0.5</version>
+            <version>2.0.7</version>
         </dependency>
+
+        <!-- Simple Logging (lightweight alternative to Logback) -->
         <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <version>1.4.11</version>
-        </dependency>
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-core</artifactId>
-            <version>1.4.11</version>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>2.0.7</version>
         </dependency>
 
         <!-- Testing -->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>${junit.version}</version>
+            <version>4.13.2</version>
             <scope>test</scope>
         </dependency>
-
     </dependencies>
 
     <build>
         <plugins>
-
+            <!-- Compiler plugin -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.11.0</version>
                 <configuration>
-                    <source>11</source>
-                    <target>11</target>
+                    <source>17</source>
+                    <target>17</target>
                 </configuration>
             </plugin>
 
+            <!-- Shade plugin for fat JAR with all dependencies -->
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <version>3.2.0</version>
-                <configuration>
-                    <mainClass>simulation.core.UAVMECSimulation</mainClass>
-                </configuration>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.5.0</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <finalName>uav-mec-simulation</finalName>
+                            <transformers>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <mainClass>simulation.core.UAVMECSimulation</mainClass>
+                                </transformer>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
+                            </transformers>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
 
+            <!-- Surefire for tests -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.2.5</version>
+            </plugin>
+
+            <!-- JAR plugin -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.4.1</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>simulation.core.UAVMECSimulation</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
-
 </project>

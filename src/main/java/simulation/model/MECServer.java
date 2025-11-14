@@ -1,55 +1,40 @@
-
 package simulation.model;
 
 public class MECServer {
-    private String serverId;
-    private double cpuCapacity;       // MIPS
-    private double memoryCapacity;    // MB
-    private double storageCapacity;   // MB
-    private double currentCpuUsage;
-    private double currentMemoryUsage;
-    private boolean isActive;
 
-    public MECServer(String serverId, double cpu, double memory, double storage) {
+    private final String serverId;
+    private final int mipsCapacity;
+    private final int ram;
+    private final int storage;
+
+    private double currentUtilization = 0;
+
+    public MECServer(String serverId, int mipsCapacity, int ram, int storage) {
         this.serverId = serverId;
-        this.cpuCapacity = cpu;
-        this.memoryCapacity = memory;
-        this.storageCapacity = storage;
-        this.currentCpuUsage = 0.0;
-        this.currentMemoryUsage = 0.0;
-        this.isActive = true;
+        this.mipsCapacity = mipsCapacity;
+        this.ram = ram;
+        this.storage = storage;
     }
 
-    public boolean canAccommodateTask(Task task) {
-        double availableCpu = cpuCapacity - currentCpuUsage;
-        double availableMemory = memoryCapacity - currentMemoryUsage;
-        
-        return (availableCpu >= task.getComputeRequirement() * 0.1) &&
-               (availableMemory >= (task.getDataSize() * 0.5));
-    }
-
-    public double getResourceUtilization() {
-        double cpuUtil = currentCpuUsage / cpuCapacity;
-        double memUtil = currentMemoryUsage / memoryCapacity;
-        return (cpuUtil + memUtil) / 2.0;
-    }
-
-    // Getters and Setters
     public String getServerId() { return serverId; }
-    public double getCpuCapacity() { return cpuCapacity; }
-    public double getMemoryCapacity() { return memoryCapacity; }
-    public double getCurrentCpuUsage() { return currentCpuUsage; }
-    public void setCurrentCpuUsage(double usage) { currentCpuUsage = usage; }
-    public double getCurrentMemoryUsage() { return currentMemoryUsage; }
-    public void setCurrentMemoryUsage(double usage) { currentMemoryUsage = usage; }
-    public boolean isActive() { return isActive; }
-    public void setActive(boolean active) { isActive = active; }
+    public int getMipsCapacity() { return mipsCapacity; }
+    public int getRam() { return ram; }
+    public int getStorage() { return storage; }
+
+    public double getResourceUtilization() { return currentUtilization; }
+
+    public void updateUtilization(double usedFraction) {
+        this.currentUtilization = Math.max(0, Math.min(1.0, usedFraction));
+    }
 
     @Override
     public String toString() {
-        return String.format(
-            "MECServer{id=%s, cpu=%.0f, mem=%.0f, utilization=%.2f%%}",
-            serverId, cpuCapacity, memoryCapacity, getResourceUtilization() * 100
-        );
+        return "MECServer{" +
+                "serverId='" + serverId + '\'' +
+                ", mipsCapacity=" + mipsCapacity +
+                ", ram=" + ram +
+                ", storage=" + storage +
+                ", utilization=" + currentUtilization +
+                '}';
     }
 }

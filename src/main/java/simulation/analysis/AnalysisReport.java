@@ -1,74 +1,103 @@
-
 package simulation.analysis;
 
-import java.util.*;
-
 import simulation.model.MetricEntry;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import java.util.List;
 
+/**
+ * Analysis Report: Generates comprehensive analysis from metrics
+ */
 public class AnalysisReport {
-    private List<MetricEntry> metrics;
-    private StatisticalAnalyzer.Statistics costStats;
-    private StatisticalAnalyzer.Statistics latencyStats;
-    private StatisticalAnalyzer.Statistics energyStats;
-    private double taskCompletionRate;
-    private double slaViolationRate;
-    private double costReduction;
-    private long totalSimulationTime;
+    private static final Logger logger = LoggerFactory.getLogger(AnalysisReport.class);
+
+    private final List<MetricEntry> metrics;
+    private double costStats_mean = 0;
+    private double costStats_median = 0;
+    private double costStats_stdDev = 0;
+    private double latencyStats_mean = 0;
+    private double latencyStats_max = 0;
+    private double energyStats_mean = 0;
+    private double taskCompletionRate = 0;
+    private double slaViolationRate = 0;
 
     public AnalysisReport(List<MetricEntry> metrics) {
         this.metrics = metrics;
+        analyzeMetrics();
     }
 
-    public void generateAnalysis() {
-        // Cost analysis
-        List<Double> costs = new ArrayList<>();
-        List<Double> latencies = new ArrayList<>();
-        List<Double> energies = new ArrayList<>();
+    private void analyzeMetrics() {
+        if (metrics.isEmpty()) return;
 
+        // Cost analysis
+        double totalCost = 0;
+        int costCount = 0;
         for (MetricEntry metric : metrics) {
-            if (metric.getCost() > 0) costs.add(metric.getCost());
-            if (metric.getLatency() > 0) latencies.add(metric.getLatency());
-            if (metric.getEnergyConsumption() > 0) energies.add(metric.getEnergyConsumption());
+            if (metric.getCost() > 0) {
+                totalCost += metric.getCost();
+                costCount++;
+            }
+        }
+        if (costCount > 0) costStats_mean = totalCost / costCount;
+
+        // Latency analysis
+        double totalLatency = 0;
+        double maxLatency = 0;
+        int latencyCount = 0;
+        for (MetricEntry metric : metrics) {
+            if (metric.getLatency() > 0) {
+                totalLatency += metric.getLatency();
+                maxLatency = Math.max(maxLatency, metric.getLatency());
+                latencyCount++;
+            }
+        }
+        if (latencyCount > 0) {
+            latencyStats_mean = totalLatency / latencyCount;
+            latencyStats_max = maxLatency;
         }
 
-        this.costStats = StatisticalAnalyzer.analyzeMetric(costs);
-        this.latencyStats = StatisticalAnalyzer.analyzeMetric(latencies);
-        this.energyStats = StatisticalAnalyzer.analyzeMetric(energies);
+        // Energy analysis
+        double totalEnergy = 0;
+        int energyCount = 0;
+        for (MetricEntry metric : metrics) {
+            if (metric.getEnergyConsumption() > 0) {
+                totalEnergy += metric.getEnergyConsumption();
+                energyCount++;
+            }
+        }
+        if (energyCount > 0) energyStats_mean = totalEnergy / energyCount;
 
-        // Completion rate
+        // Success rate
         long successCount = metrics.stream().filter(MetricEntry::isSuccessful).count();
-        this.taskCompletionRate = (double) successCount / metrics.size() * 100;
+        taskCompletionRate = ((double) successCount / metrics.size()) * 100;
+        slaViolationRate = 100 - taskCompletionRate;
 
-        // SLA violations (placeholder - implement based on your SLA definition)
-        this.slaViolationRate = 0.0;
+        logger.info("Analysis Report: Cost ${:.2f}, Latency {:.2f}ms, Success {:.2f}%",
+                costStats_mean, latencyStats_mean, taskCompletionRate);
     }
 
     public String generateHTMLReport() {
         StringBuilder html = new StringBuilder();
-        html.append("<html><head><title>UAV-MEC Simulation Report</title></head><body>\n");
-        html.append("<h1>Simulation Analysis Report</h1>\n");
-        
-        html.append("<h2>Cost Analysis</h2>\n");
-        html.append(String.format("<p>Mean Cost: $%.4f</p>\n", costStats.mean));
-        html.append(String.format("<p>Median Cost: $%.4f</p>\n", costStats.median));
-        html.append(String.format("<p>Std Dev: $%.4f</p>\n", costStats.stdDev));
-
-        html.append("<h2>Latency Analysis</h2>\n");
-        html.append(String.format("<p>Mean Latency: %.2f ms</p>\n", latencyStats.mean));
-        html.append(String.format("<p>Max Latency: %.2f ms</p>\n", latencyStats.max));
-
-        html.append("<h2>Success Rates</h2>\n");
-        html.append(String.format("<p>Task Completion: %.2f%%</p>\n", taskCompletionRate));
-        html.append(String.format("<p>SLA Compliance: %.2f%%</p>\n", 100 - slaViolationRate));
-
-        html.append("</body></html>\n");
+        html.append("<html><body><h1>UAV-MEC Simulation Report</h1>");
+        html.append(String.format("<p><b>Cost Analysis</b></p>"));
+        html.append(String.format("<p>Mean Cost: $%.4f</p>", costStats_mean));
+        html.append(String.format("<p>Median Cost: $%.4f</p>", costStats_median));
+        html.append(String.format("<p>Std Dev: $%.4f</p>", costStats_stdDev));
+        html.append(String.format("<p><b>Latency Analysis</b></p>"));
+        html.append(String.format("<p>Mean Latency: %.2f ms</p>", latencyStats_mean));
+        html.append(String.format("<p>Max Latency: %.2f ms</p>", latencyStats_max));
+        html.append(String.format("<p><b>Performance</b></p>"));
+        html.append(String.format("<p>Task Completion: %.2f%%</p>", taskCompletionRate));
+        html.append(String.format("<p>SLA Compliance: %.2f%%</p>", 100 - slaViolationRate));
+        html.append("</body></html>");
         return html.toString();
     }
 
-    // Getters
-    public StatisticalAnalyzer.Statistics getCostStats() { return costStats; }
-    public StatisticalAnalyzer.Statistics getLatencyStats() { return latencyStats; }
-    public StatisticalAnalyzer.Statistics getEnergyStats() { return energyStats; }
+    // ===== Getters =====
+    public double getCostMean() { return costStats_mean; }
+    public double getLatencyMean() { return latencyStats_mean; }
+    public double getLatencyMax() { return latencyStats_max; }
+    public double getEnergyMean() { return energyStats_mean; }
     public double getTaskCompletionRate() { return taskCompletionRate; }
     public double getSLAViolationRate() { return slaViolationRate; }
 }

@@ -1,27 +1,32 @@
-
 package simulation.model;
 
+/**
+ * Cost Model: Encapsulates economic parameters for service provider profit calculation
+ * Based on paper formulation: Profit = Revenue - Cost
+ */
 public class CostModel {
-    // Cost parameters (in $/unit)
-    private double computeCostPerCpuHour;      // $/CPU-hour
-    private double bandwidthCostPerGB;         // $/GB
-    private double latencyPenaltyPerMs;        // $/ms SLA breach
-    private double energyCostPerKWh;           // $/kWh
+    
+    // ===== Pricing Parameters ($/unit) =====
+    private double computeCostPerCpuHour; // $/CPU-hour - ES leasing cost
+    private double bandwidthCostPerGB; // $/GB - transmission cost
+    private double latencyPenaltyPerMs; // $/ms - SLA violation penalty
+    private double energyCostPerKWh; // $/kWh - power consumption cost
 
-    // Resource parameters
-    private double vmCpuCapacity;              // MIPS per CPU
-    private double vmMemoryCapacity;           // MB
+    // ===== Resource Parameters =====
+    private double vmCpuCapacity = 1000.0; // MIPS per CPU
+    private double vmMemoryCapacity = 4096.0; // MB
 
-    public CostModel(double computeCost, double bandwidthCost, 
+    public CostModel(double computeCost, double bandwidthCost,
                      double latencyPenalty, double energyCost) {
         this.computeCostPerCpuHour = computeCost;
         this.bandwidthCostPerGB = bandwidthCost;
         this.latencyPenaltyPerMs = latencyPenalty;
         this.energyCostPerKWh = energyCost;
-        this.vmCpuCapacity = 1000.0;   // Default: 1000 MIPS
-        this.vmMemoryCapacity = 4096.0; // Default: 4GB
     }
 
+    /**
+     * Cost calculation result structure
+     */
     public static class CostCalculation {
         public double computeCost;
         public double bandwidthCost;
@@ -40,79 +45,53 @@ public class CostModel {
 
         @Override
         public String toString() {
-            return String.format(
-                "Cost{compute=%.4f, bw=%.4f, latency=%.4f, energy=%.4f, total=%.4f}",
-                computeCost, bandwidthCost, latencyPenalty, energyCost, totalCost
-            );
+            return String.format("Cost{Compute:$%.4f, BW:$%.4f, Latency:$%.4f, Energy:$%.4f, Total:$%.4f}",
+                    computeCost, bandwidthCost, latencyPenalty, energyCost, totalCost);
         }
     }
 
-    // Calculate cost for executing a task on a VM
-    public CostCalculation calculateTaskCost(double taskLength, 
-                                             double dataSize,
-                                             double estimatedLatency,
-                                             double deadline,
-                                             double estimatedEnergy) {
-        // Compute cost: (CPU-hours) * rate
-        double computeHours = (taskLength / vmCpuCapacity) / 3600.0;
-        double computeCost = computeHours * computeCostPerCpuHour;
+    /**
+     * Calculate cost for task execution
+     */
+    public CostCalculation calculateCost(long computeMI, long dataSizeKB, 
+                                        double executionTimeSeconds, double powerWatts) {
+        
+        // Compute cost: (MIPS * $/CPU-hour) / 3600 seconds
+        double computeCost = (computeMI / vmCpuCapacity) * computeCostPerCpuHour / 3600.0;
 
-        // Bandwidth cost: (GB transferred) * rate
-        double dataGB = dataSize / 1024.0;
-        double bwCost = dataGB * bandwidthCostPerGB;
+        // Bandwidth cost: (data KB -> GB) * $/GB
+        double bandwidthCost = (dataSizeKB / (1024.0 * 1024.0)) * bandwidthCostPerGB;
 
-        // Latency penalty: (excess latency over deadline) * penalty rate
-        double excessLatency = Math.max(0, estimatedLatency - deadline);
-        double latencyCost = excessLatency * latencyPenaltyPerMs;
+        // Energy cost: (Power W -> kW) * Time * $/kWh
+        double energyCost = (powerWatts / 1000.0) * (executionTimeSeconds / 3600.0) * energyCostPerKWh;
 
-        // Energy cost: (kWh consumed) * rate
-        double energyKWh = estimatedEnergy / 3600000.0; // Convert Joules to kWh
-        double energyCost = energyKWh * energyCostPerKWh;
+        // Latency penalty: $/ms
+        double latencyPenaltyCost = executionTimeSeconds * 1000.0 * latencyPenaltyPerMs;
 
-        return new CostCalculation(computeCost, bwCost, latencyCost, energyCost);
+        return new CostCalculation(computeCost, bandwidthCost, latencyPenaltyCost, energyCost);
     }
 
-    // Simple cost for comparison
-    public double estimateTaskCost(double taskLength, double dataSize) {
-        double computeHours = (taskLength / vmCpuCapacity) / 3600.0;
-        double dataGB = dataSize / 1024.0;
-        return (computeHours * computeCostPerCpuHour) + (dataGB * bandwidthCostPerGB);
-    }
+    // ===== Getters =====
 
-    // Getters and Setters
-    public void setComputeCostPerCpuHour(double cost) { 
-        this.computeCostPerCpuHour = cost; 
-    }
-    public double getComputeCostPerCpuHour() { 
-        return computeCostPerCpuHour; 
-    }
+    public double getComputeCost() { return computeCostPerCpuHour; }
+    public double getBandwidthCost() { return bandwidthCostPerGB; }
+    public double getLatencyPenalty() { return latencyPenaltyPerMs; }
+    public double getEnergyCost() { return energyCostPerKWh; }
+    public double getVmCpuCapacity() { return vmCpuCapacity; }
+    public double getVmMemoryCapacity() { return vmMemoryCapacity; }
 
-    public void setBandwidthCostPerGB(double cost) { 
-        this.bandwidthCostPerGB = cost; 
-    }
-    public double getBandwidthCostPerGB() { 
-        return bandwidthCostPerGB; 
-    }
+    // ===== Setters =====
 
-    public void setLatencyPenaltyPerMs(double penalty) { 
-        this.latencyPenaltyPerMs = penalty; 
-    }
-    public double getLatencyPenaltyPerMs() { 
-        return latencyPenaltyPerMs; 
-    }
+    public void setComputeCost(double cost) { computeCostPerCpuHour = cost; }
+    public void setBandwidthCost(double cost) { bandwidthCostPerGB = cost; }
+    public void setLatencyPenalty(double penalty) { latencyPenaltyPerMs = penalty; }
+    public void setEnergyCost(double cost) { energyCostPerKWh = cost; }
+    public void setVmCpuCapacity(double capacity) { vmCpuCapacity = capacity; }
+    public void setVmMemoryCapacity(double capacity) { vmMemoryCapacity = capacity; }
 
-    public void setEnergyCostPerKWh(double cost) { 
-        this.energyCostPerKWh = cost; 
-    }
-    public double getEnergyCostPerKWh() { 
-        return energyCostPerKWh; 
-    }
-
-    public void setVmCpuCapacity(double mips) { 
-        this.vmCpuCapacity = mips; 
-    }
-
-    public void setVmMemoryCapacity(double mb) { 
-        this.vmMemoryCapacity = mb; 
+    @Override
+    public String toString() {
+        return String.format("CostModel{Compute:$%.6f/hr, BW:$%.6f/GB, Latency:$%.6f/ms, Energy:$%.6f/kWh}",
+                computeCostPerCpuHour, bandwidthCostPerGB, latencyPenaltyPerMs, energyCostPerKWh);
     }
 }

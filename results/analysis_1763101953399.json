@@ -1,0 +1,902 @@
+[
+  {
+    "type": "CLOUDLET_FINISHED",
+    "targetId": 0,
+    "success": true,
+    "timestamp": 4,
+    "cost": 3.42392,
+    "latency": 1.7992000000000004,
+    "energyConsumption": 0.0
+  },
+  {
+    "type": "CLOUDLET_FINISHED",
+    "targetId": 1,
+    "success": false,
+    "timestamp": 6,
+    "cost": 0.1,
+    "latency": 1.4376319534793698,
+    "energyConsumption": 0.0
+  },
+  {
+    "type": "CLOUDLET_FINISHED",
+    "targetId": 2,
+    "success": false,
+    "timestamp": 6,
+    "cost": 0.1,
+    "latency": 0.7923999999999998,
+    "energyConsumption": 0.0
+  },
+  {
+    "type": "CLOUDLET_FINISHED",
+    "targetId": 4,
+    "success": false,
+    "timestamp": 7,
+    "cost": 0.1,
+    "latency": 0.9018766795606172,
+    "energyConsumption": 0.0
+  },
+  {
+    "type": "CLOUDLET_FINISHED",
+    "targetId": 3,
+    "success": false,
+    "timestamp": 7,
+    "cost": 0.1,
+    "latency": 1.7751947996276494,
+    "energyConsumption": 0.0
+  },
+  {
+    "type": "CLOUDLET_FINISHED",
+    "targetId": 5,
+    "success": false,
+    "timestamp": 7,
+    "cost": 0.1,
+    "latency": 0.5859083448067768,
+    "energyConsumption": 0.0
+  },
+  {
+    "type": "CLOUDLET_FINISHED",
+    "targetId": 6,
+    "success": false,
+    "timestamp": 10,
+    "cost": 0.1,
+    "latency": 1.3999999999999986,
+    "energyConsumption": 0.0
+  },
+  {
+    "type": "CLOUDLET_FINISHED",
+    "targetId": 7,
+    "success": false,
+    "timestamp": 10,
+    "cost": 0.1,
+    "latency": 0.7488475720743324,
+    "energyConsumption": 0.0
+  },
+  {
+    "type": "CLOUDLET_FINISHED",
+    "targetId": 8,
+    "success": false,
+    "timestamp": 17,
+    "cost": 0.1,
+    "latency": 0.6044000000000018,
+    "energyConsumption": 0.0
+  },
+  {
+    "type": "CLOUDLET_FINISHED",
+    "targetId": 9,
+    "success": false,
+    "timestamp": 19,
+    "cost": 0.1,
+    "latency": 1.7274015177290103,
+    "energyConsumption": 0.0
+  },
+  {
+    "type": "CLOUDLET_FINISHED",
+    "targetId": 10,
+    "success": false,
+    "timestamp": 19,
+    "cost": 0.1,
+    "latency": 1.1909175639605145,
+    "energyConsumption": 0.0
+  },
+  {
+    "type": "CLOUDLET_FINISHED",
+    "targetId": 11,
+    "success": false,
+    "timestamp": 21,
+    "cost": 0.1,
+    "latency": 0.5372000000000021,
+    "energyConsumption": 0.0
+  },
+  {
+    "type": "CLOUDLET_FINISHED",
+    "targetId": 12,
+    "success": false,
+    "timestamp": 22,
+    "cost": 0.1,
+    "latency": 1.4297986000148803,
+    "energyConsumption": 0.0
+  },
+  {
+    "type": "CLOUDLET_FINISHED",
+    "targetId": 13,
+    "success": false,
+    "timestamp": 24,
+    "cost": 0.1,
+    "latency": 1.1280000000000001,
+    "energyConsumption": 0.0
+  },
+  {
+    "type": "CLOUDLET_FINISHED",
+    "targetId": 14,
+    "success": false,
+    "timestamp": 25,
+    "cost": 0.1,
+    "latency": 1.3580000000000005,
+    "energyConsumption": 0.0
+  },
+  {
+    "type": "CLOUDLET_FINISHED",
+    "targetId": 15,
+    "success": false,
+    "timestamp": 28,
+    "cost": 0.1,
+    "latency": 1.9084000000000003,
+    "energyConsumption": 0.0
+  },
+  {
+    "type": "CLOUDLET_FINISHED",
+    "targetId": 16,
+    "success": false,
+    "timestamp": 32,
+    "cost": 0.1,
+    "latency": 1.4223999999999997,
+    "energyConsumption": 0.0
+  },
+  {
+    "type": "CLOUDLET_FINISHED",
+    "targetId": 17,
+    "success": false,
+    "timestamp": 32,
+    "cost": 0.1,
+    "latency": 1.9008650594998855,
+    "energyConsumption": 0.0
+  },
+  {
+    "type": "CLOUDLET_FINISHED",
+    "targetId": 18,
+    "success": false,
+    "timestamp": 34,
+    "cost": 0.1,
+    "latency": 0.7832000000000008,
+    "energyConsumption": 0.0
+  },
+  {
+    "type": "CLOUDLET_FINISHED",
+    "targetId": 19,
+    "success": false,
+    "timestamp": 49,
+    "cost": 0.1,
+    "latency": 1.7672000000000025,
+    "energyConsumption": 0.0
+  },
+  {
+    "type": "CLOUDLET_FINISHED",
+    "targetId": 20,
+    "success": false,
+    "timestamp": 50,
+    "cost": 0.1,
+    "latency": 0.8983695884247638,
+    "energyConsumption": 0.0
+  },
+  {
+    "type": "CLOUDLET_FINISHED",
+    "targetId": 22,
+    "success": false,
+    "timestamp": 52,
+    "cost": 0.1,
+    "latency": 0.740000000000002,
+    "energyConsumption": 0.0
+  },
+  {
+    "type": "CLOUDLET_FINISHED",
+    "targetId": 21,
+    "success": false,
+    "timestamp": 52,
+    "cost": 0.1,
+    "latency": 2.1062008743490424,
+    "energyConsumption": 0.0
+  },
+  {
+    "type": "CLOUDLET_FINISHED",
+    "targetId": 23,
+    "success": false,
+    "timestamp": 54,
+    "cost": 0.1,
+    "latency": 1.6538351309976704,
+    "energyConsumption": 0.0
+  },
+  {
+    "type": "CLOUDLET_FINISHED",
+    "targetId": 24,
+    "success": false,
+    "timestamp": 56,
+    "cost": 0.1,
+    "latency": 1.5396,
+    "energyConsumption": 0.0
+  },
+  {
+    "type": "CLOUDLET_FINISHED",
+    "targetId": 25,
+    "success": false,
+    "timestamp": 61,
+    "cost": 0.1,
+    "latency": 0.8984000000000023,
+    "energyConsumption": 0.0
+  },
+  {
+    "type": "CLOUDLET_FINISHED",
+    "targetId": 26,
+    "success": false,
+    "timestamp": 63,
+    "cost": 0.1,
+    "latency": 1.7195999999999998,
+    "energyConsumption": 0.0
+  },
+  {
+    "type": "CLOUDLET_FINISHED",
+    "targetId": 27,
+    "success": false,
+    "timestamp": 67,
+    "cost": 0.1,
+    "latency": 0.6171999999999969,
+    "energyConsumption": 0.0
+  },
+  {
+    "type": "CLOUDLET_FINISHED",
+    "targetId": 28,
+    "success": false,
+    "timestamp": 68,
+    "cost": 0.1,
+    "latency": 2.126959674000233,
+    "energyConsumption": 0.0
+  },
+  {
+    "type": "CLOUDLET_FINISHED",
+    "targetId": 29,
+    "success": false,
+    "timestamp": 76,
+    "cost": 0.1,
+    "latency": 1.450800000000001,
+    "energyConsumption": 0.0
+  },
+  {
+    "type": "CLOUDLET_FINISHED",
+    "targetId": 30,
+    "success": false,
+    "timestamp": 79,
+    "cost": 0.1,
+    "latency": 0.6951999999999998,
+    "energyConsumption": 0.0
+  },
+  {
+    "type": "CLOUDLET_FINISHED",
+    "targetId": 31,
+    "success": false,
+    "timestamp": 80,
+    "cost": 0.1,
+    "latency": 1.4291999999999945,
+    "energyConsumption": 0.0
+  },
+  {
+    "type": "CLOUDLET_FINISHED",
+    "targetId": 32,
+    "success": false,
+    "timestamp": 83,
+    "cost": 0.1,
+    "latency": 1.8663999999999987,
+    "energyConsumption": 0.0
+  },
+  {
+    "type": "CLOUDLET_FINISHED",
+    "targetId": 33,
+    "success": false,
+    "timestamp": 85,
+    "cost": 0.1,
+    "latency": 1.9487999999999914,
+    "energyConsumption": 0.0
+  },
+  {
+    "type": "CLOUDLET_FINISHED",
+    "targetId": 34,
+    "success": false,
+    "timestamp": 91,
+    "cost": 0.1,
+    "latency": 1.564399999999992,
+    "energyConsumption": 0.0
+  },
+  {
+    "type": "CLOUDLET_FINISHED",
+    "targetId": 35,
+    "success": false,
+    "timestamp": 97,
+    "cost": 0.1,
+    "latency": 1.2563999999999993,
+    "energyConsumption": 0.0
+  },
+  {
+    "type": "CLOUDLET_FINISHED",
+    "targetId": 36,
+    "success": false,
+    "timestamp": 98,
+    "cost": 0.1,
+    "latency": 0.711199999999991,
+    "energyConsumption": 0.0
+  },
+  {
+    "type": "CLOUDLET_FINISHED",
+    "targetId": 37,
+    "success": false,
+    "timestamp": 105,
+    "cost": 0.1,
+    "latency": 0.7035999999999945,
+    "energyConsumption": 0.0
+  },
+  {
+    "type": "CLOUDLET_FINISHED",
+    "targetId": 38,
+    "success": false,
+    "timestamp": 106,
+    "cost": 0.1,
+    "latency": 0.6495999999999924,
+    "energyConsumption": 0.0
+  },
+  {
+    "type": "CLOUDLET_FINISHED",
+    "targetId": 39,
+    "success": false,
+    "timestamp": 106,
+    "cost": 0.1,
+    "latency": 0.5941231979013253,
+    "energyConsumption": 0.0
+  },
+  {
+    "type": "CLOUDLET_FINISHED",
+    "targetId": 40,
+    "success": false,
+    "timestamp": 109,
+    "cost": 0.1,
+    "latency": 0.7907999999999902,
+    "energyConsumption": 0.0
+  },
+  {
+    "type": "CLOUDLET_FINISHED",
+    "targetId": 41,
+    "success": false,
+    "timestamp": 111,
+    "cost": 0.1,
+    "latency": 1.6459999999999866,
+    "energyConsumption": 0.0
+  },
+  {
+    "type": "CLOUDLET_FINISHED",
+    "targetId": 42,
+    "success": false,
+    "timestamp": 112,
+    "cost": 0.1,
+    "latency": 1.300754425091739,
+    "energyConsumption": 0.0
+  },
+  {
+    "type": "CLOUDLET_FINISHED",
+    "targetId": 44,
+    "success": false,
+    "timestamp": 114,
+    "cost": 0.1,
+    "latency": 0.7259999999999991,
+    "energyConsumption": 0.0
+  },
+  {
+    "type": "CLOUDLET_FINISHED",
+    "targetId": 43,
+    "success": false,
+    "timestamp": 115,
+    "cost": 0.1,
+    "latency": 1.6763280925434998,
+    "energyConsumption": 0.0
+  },
+  {
+    "type": "CLOUDLET_FINISHED",
+    "targetId": 45,
+    "success": false,
+    "timestamp": 116,
+    "cost": 0.1,
+    "latency": 1.255062647362493,
+    "energyConsumption": 0.0
+  },
+  {
+    "type": "CLOUDLET_FINISHED",
+    "targetId": 46,
+    "success": false,
+    "timestamp": 117,
+    "cost": 0.1,
+    "latency": 1.6546376257653463,
+    "energyConsumption": 0.0
+  },
+  {
+    "type": "CLOUDLET_FINISHED",
+    "targetId": 47,
+    "success": false,
+    "timestamp": 124,
+    "cost": 0.1,
+    "latency": 1.2471999999999923,
+    "energyConsumption": 0.0
+  },
+  {
+    "type": "CLOUDLET_FINISHED",
+    "targetId": 48,
+    "success": false,
+    "timestamp": 125,
+    "cost": 0.1,
+    "latency": 0.9183999999999912,
+    "energyConsumption": 0.0
+  },
+  {
+    "type": "CLOUDLET_FINISHED",
+    "targetId": 49,
+    "success": false,
+    "timestamp": 125,
+    "cost": 0.1,
+    "latency": 0.8050999393286844,
+    "energyConsumption": 0.0
+  },
+  {
+    "type": "CLOUDLET_FINISHED",
+    "targetId": 50,
+    "success": false,
+    "timestamp": 127,
+    "cost": 0.1,
+    "latency": 1.1063999999999936,
+    "energyConsumption": 0.0
+  },
+  {
+    "type": "CLOUDLET_FINISHED",
+    "targetId": 51,
+    "success": false,
+    "timestamp": 129,
+    "cost": 0.1,
+    "latency": 1.1928000000000054,
+    "energyConsumption": 0.0
+  },
+  {
+    "type": "CLOUDLET_FINISHED",
+    "targetId": 52,
+    "success": false,
+    "timestamp": 131,
+    "cost": 0.1,
+    "latency": 0.9159999999999968,
+    "energyConsumption": 0.0
+  },
+  {
+    "type": "CLOUDLET_FINISHED",
+    "targetId": 53,
+    "success": false,
+    "timestamp": 131,
+    "cost": 0.1,
+    "latency": 1.0420461978861795,
+    "energyConsumption": 0.0
+  },
+  {
+    "type": "CLOUDLET_FINISHED",
+    "targetId": 54,
+    "success": false,
+    "timestamp": 135,
+    "cost": 0.1,
+    "latency": 1.220799999999997,
+    "energyConsumption": 0.0
+  },
+  {
+    "type": "CLOUDLET_FINISHED",
+    "targetId": 55,
+    "success": false,
+    "timestamp": 137,
+    "cost": 0.1,
+    "latency": 1.358000000000004,
+    "energyConsumption": 0.0
+  },
+  {
+    "type": "CLOUDLET_FINISHED",
+    "targetId": 56,
+    "success": false,
+    "timestamp": 138,
+    "cost": 0.1,
+    "latency": 0.921999999999997,
+    "energyConsumption": 0.0
+  },
+  {
+    "type": "CLOUDLET_FINISHED",
+    "targetId": 57,
+    "success": false,
+    "timestamp": 140,
+    "cost": 0.1,
+    "latency": 1.4407999999999959,
+    "energyConsumption": 0.0
+  },
+  {
+    "type": "CLOUDLET_FINISHED",
+    "targetId": 58,
+    "success": false,
+    "timestamp": 142,
+    "cost": 0.1,
+    "latency": 1.2139999999999986,
+    "energyConsumption": 0.0
+  },
+  {
+    "type": "CLOUDLET_FINISHED",
+    "targetId": 59,
+    "success": false,
+    "timestamp": 150,
+    "cost": 0.1,
+    "latency": 1.8476,
+    "energyConsumption": 0.0
+  },
+  {
+    "type": "CLOUDLET_FINISHED",
+    "targetId": 60,
+    "success": false,
+    "timestamp": 153,
+    "cost": 0.1,
+    "latency": 1.887200000000007,
+    "energyConsumption": 0.0
+  },
+  {
+    "type": "CLOUDLET_FINISHED",
+    "targetId": 62,
+    "success": false,
+    "timestamp": 159,
+    "cost": 0.1,
+    "latency": 0.651600000000002,
+    "energyConsumption": 0.0
+  },
+  {
+    "type": "CLOUDLET_FINISHED",
+    "targetId": 61,
+    "success": false,
+    "timestamp": 160,
+    "cost": 0.1,
+    "latency": 2.1111119221997114,
+    "energyConsumption": 0.0
+  },
+  {
+    "type": "CLOUDLET_FINISHED",
+    "targetId": 63,
+    "success": false,
+    "timestamp": 161,
+    "cost": 0.1,
+    "latency": 2.2036668653338722,
+    "energyConsumption": 0.0
+  },
+  {
+    "type": "CLOUDLET_FINISHED",
+    "targetId": 64,
+    "success": false,
+    "timestamp": 162,
+    "cost": 0.1,
+    "latency": 0.7019999999999982,
+    "energyConsumption": 0.0
+  },
+  {
+    "type": "CLOUDLET_FINISHED",
+    "targetId": 65,
+    "success": false,
+    "timestamp": 165,
+    "cost": 0.1,
+    "latency": 1.5563999999999965,
+    "energyConsumption": 0.0
+  },
+  {
+    "type": "CLOUDLET_FINISHED",
+    "targetId": 66,
+    "success": false,
+    "timestamp": 166,
+    "cost": 0.1,
+    "latency": 1.6529452003562426,
+    "energyConsumption": 0.0
+  },
+  {
+    "type": "CLOUDLET_FINISHED",
+    "targetId": 67,
+    "success": false,
+    "timestamp": 168,
+    "cost": 0.1,
+    "latency": 2.0165969702670736,
+    "energyConsumption": 0.0
+  },
+  {
+    "type": "CLOUDLET_FINISHED",
+    "targetId": 69,
+    "success": false,
+    "timestamp": 170,
+    "cost": 0.1,
+    "latency": 0.7567999999999984,
+    "energyConsumption": 0.0
+  },
+  {
+    "type": "CLOUDLET_FINISHED",
+    "targetId": 68,
+    "success": false,
+    "timestamp": 170,
+    "cost": 0.1,
+    "latency": 1.1800000000000068,
+    "energyConsumption": 0.0
+  },
+  {
+    "type": "CLOUDLET_FINISHED",
+    "targetId": 71,
+    "success": false,
+    "timestamp": 172,
+    "cost": 0.1,
+    "latency": 0.8512000000000057,
+    "energyConsumption": 0.0
+  },
+  {
+    "type": "CLOUDLET_FINISHED",
+    "targetId": 70,
+    "success": false,
+    "timestamp": 173,
+    "cost": 0.1,
+    "latency": 1.9032580216797612,
+    "energyConsumption": 0.0
+  },
+  {
+    "type": "CLOUDLET_FINISHED",
+    "targetId": 72,
+    "success": false,
+    "timestamp": 175,
+    "cost": 0.1,
+    "latency": 0.9211999999999989,
+    "energyConsumption": 0.0
+  },
+  {
+    "type": "CLOUDLET_FINISHED",
+    "targetId": 73,
+    "success": false,
+    "timestamp": 176,
+    "cost": 0.1,
+    "latency": 0.983283905106191,
+    "energyConsumption": 0.0
+  },
+  {
+    "type": "CLOUDLET_FINISHED",
+    "targetId": 74,
+    "success": false,
+    "timestamp": 177,
+    "cost": 0.1,
+    "latency": 1.5175374858209807,
+    "energyConsumption": 0.0
+  },
+  {
+    "type": "CLOUDLET_FINISHED",
+    "targetId": 75,
+    "success": false,
+    "timestamp": 178,
+    "cost": 0.1,
+    "latency": 1.7688452457621224,
+    "energyConsumption": 0.0
+  },
+  {
+    "type": "CLOUDLET_FINISHED",
+    "targetId": 76,
+    "success": false,
+    "timestamp": 183,
+    "cost": 0.1,
+    "latency": 2.1004000000000076,
+    "energyConsumption": 0.0
+  },
+  {
+    "type": "CLOUDLET_FINISHED",
+    "targetId": 77,
+    "success": false,
+    "timestamp": 183,
+    "cost": 0.1,
+    "latency": 0.9387142856712956,
+    "energyConsumption": 0.0
+  },
+  {
+    "type": "CLOUDLET_FINISHED",
+    "targetId": 78,
+    "success": false,
+    "timestamp": 185,
+    "cost": 0.1,
+    "latency": 1.5991999999999962,
+    "energyConsumption": 0.0
+  },
+  {
+    "type": "CLOUDLET_FINISHED",
+    "targetId": 79,
+    "success": false,
+    "timestamp": 186,
+    "cost": 0.1,
+    "latency": 0.6967999999999961,
+    "energyConsumption": 0.0
+  },
+  {
+    "type": "CLOUDLET_FINISHED",
+    "targetId": 82,
+    "success": false,
+    "timestamp": 192,
+    "cost": 0.1,
+    "latency": 0.705600000000004,
+    "energyConsumption": 0.0
+  },
+  {
+    "type": "CLOUDLET_FINISHED",
+    "targetId": 80,
+    "success": false,
+    "timestamp": 193,
+    "cost": 0.1,
+    "latency": 2.0541450949662874,
+    "energyConsumption": 0.0
+  },
+  {
+    "type": "CLOUDLET_FINISHED",
+    "targetId": 81,
+    "success": false,
+    "timestamp": 193,
+    "cost": 0.1,
+    "latency": 1.7325085430822469,
+    "energyConsumption": 0.0
+  },
+  {
+    "type": "CLOUDLET_FINISHED",
+    "targetId": 83,
+    "success": false,
+    "timestamp": 194,
+    "cost": 0.1,
+    "latency": 0.8303999999999974,
+    "energyConsumption": 0.0
+  },
+  {
+    "type": "CLOUDLET_FINISHED",
+    "targetId": 84,
+    "success": false,
+    "timestamp": 195,
+    "cost": 0.1,
+    "latency": 1.7206608158245444,
+    "energyConsumption": 0.0
+  },
+  {
+    "type": "CLOUDLET_FINISHED",
+    "targetId": 85,
+    "success": false,
+    "timestamp": 199,
+    "cost": 0.1,
+    "latency": 1.607200000000006,
+    "energyConsumption": 0.0
+  },
+  {
+    "type": "CLOUDLET_FINISHED",
+    "targetId": 86,
+    "success": false,
+    "timestamp": 203,
+    "cost": 0.1,
+    "latency": 2.132000000000005,
+    "energyConsumption": 0.0
+  },
+  {
+    "type": "CLOUDLET_FINISHED",
+    "targetId": 88,
+    "success": false,
+    "timestamp": 206,
+    "cost": 0.1,
+    "latency": 0.9992000000000019,
+    "energyConsumption": 0.0
+  },
+  {
+    "type": "CLOUDLET_FINISHED",
+    "targetId": 87,
+    "success": false,
+    "timestamp": 207,
+    "cost": 0.1,
+    "latency": 1.6534443559320948,
+    "energyConsumption": 0.0
+  },
+  {
+    "type": "CLOUDLET_FINISHED",
+    "targetId": 89,
+    "success": false,
+    "timestamp": 209,
+    "cost": 0.1,
+    "latency": 1.7027999999999963,
+    "energyConsumption": 0.0
+  },
+  {
+    "type": "CLOUDLET_FINISHED",
+    "targetId": 90,
+    "success": false,
+    "timestamp": 209,
+    "cost": 0.1,
+    "latency": 1.5010708468479947,
+    "energyConsumption": 0.0
+  },
+  {
+    "type": "CLOUDLET_FINISHED",
+    "targetId": 91,
+    "success": false,
+    "timestamp": 210,
+    "cost": 0.1,
+    "latency": 1.636858854223334,
+    "energyConsumption": 0.0
+  },
+  {
+    "type": "CLOUDLET_FINISHED",
+    "targetId": 92,
+    "success": false,
+    "timestamp": 212,
+    "cost": 0.1,
+    "latency": 1.903008010992096,
+    "energyConsumption": 0.0
+  },
+  {
+    "type": "CLOUDLET_FINISHED",
+    "targetId": 93,
+    "success": false,
+    "timestamp": 215,
+    "cost": 0.1,
+    "latency": 1.0104000000000042,
+    "energyConsumption": 0.0
+  },
+  {
+    "type": "CLOUDLET_FINISHED",
+    "targetId": 94,
+    "success": false,
+    "timestamp": 217,
+    "cost": 0.1,
+    "latency": 1.0276000000000067,
+    "energyConsumption": 0.0
+  },
+  {
+    "type": "CLOUDLET_FINISHED",
+    "targetId": 95,
+    "success": false,
+    "timestamp": 223,
+    "cost": 0.1,
+    "latency": 1.4535999999999945,
+    "energyConsumption": 0.0
+  },
+  {
+    "type": "CLOUDLET_FINISHED",
+    "targetId": 96,
+    "success": false,
+    "timestamp": 224,
+    "cost": 0.1,
+    "latency": 0.9444000000000017,
+    "energyConsumption": 0.0
+  },
+  {
+    "type": "CLOUDLET_FINISHED",
+    "targetId": 97,
+    "success": false,
+    "timestamp": 229,
+    "cost": 0.1,
+    "latency": 1.7244000000000028,
+    "energyConsumption": 0.0
+  },
+  {
+    "type": "CLOUDLET_FINISHED",
+    "targetId": 98,
+    "success": false,
+    "timestamp": 236,
+    "cost": 0.1,
+    "latency": 0.8444000000000074,
+    "energyConsumption": 0.0
+  },
+  {
+    "type": "CLOUDLET_FINISHED",
+    "targetId": 99,
+    "success": false,
+    "timestamp": 238,
+    "cost": 0.1,
+    "latency": 2.003600000000006,
+    "energyConsumption": 0.0
+  }
+]

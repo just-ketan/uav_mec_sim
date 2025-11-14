@@ -1,4 +1,3 @@
-
 package simulation.core;
 
 import org.yaml.snakeyaml.Yaml;
@@ -13,73 +12,111 @@ import java.util.Map;
 public class ConfigurationLoader {
     private static final Logger logger = LoggerFactory.getLogger(ConfigurationLoader.class);
 
-    public static SimulationConfig loadFromYAML(String filePath) {
-        try (InputStream input = Files.newInputStream(Paths.get(filePath))) {
-            Yaml yaml = new Yaml();
-            Map<String, Map<String, Object>> config = yaml.load(input);
+    @SuppressWarnings("unchecked")
+    public static SimulationConfig loadFromYAML(String path) {
+        SimulationConfig cfg = new SimulationConfig();
+        try (InputStream in = Files.newInputStream(Paths.get(path))) {
+            Map<String, Object> root = new Yaml().load(in);
+            if (root == null) return cfg;
 
-            SimulationConfig simConfig = new SimulationConfig();
+            // Top-level simple fields
+            cfg.setSimulationTime(getDouble(root, "simulationTime", cfg.getSimulationTime()));
+            cfg.setRandomSeed(getLong(root, "randomSeed", cfg.getRandomSeed()));
+            cfg.setResultsDirectory(getString(root, "resultsDirectory", cfg.getResultsDirectory()));
 
-            // Load simulation parameters
-            Map<String, Object> simParams = config.get("simulation");
-            if (simParams != null) {
-                Number time = (Number) simParams.get("simulationTime");
-                if (time != null) simConfig.withSimulationTime(time.doubleValue());
-
-                Number seed = (Number) simParams.get("randomSeed");
-                if (seed != null) simConfig.withRandomSeed(seed.longValue());
+            // Datacenter
+            Map<String, Object> dc = getMap(root, "datacenter");
+            if (dc != null) {
+                cfg.setHostCount(getInt(dc, "hostCount", cfg.getHostCount()));
+                cfg.setHostMips(getInt(dc, "cpuCapacity", cfg.getHostMips()));
+                cfg.setHostPes(getInt(dc, "pes", cfg.getHostPes()));
+                cfg.setHostRam(getInt(dc, "ram", cfg.getHostRam()));
+                cfg.setHostBandwidth(getInt(dc, "bandwidth", cfg.getHostBandwidth()));
+                cfg.setHostStorage(getInt(dc, "storage", cfg.getHostStorage()));
             }
 
-            // Load infrastructure
-            Map<String, Object> infra = config.get("infrastructure");
-            if (infra != null) {
-                Map<String, Object> vms = (Map<String, Object>) infra.get("vms");
-                if (vms != null) {
-                    Number vmCount = (Number) vms.get("count");
-                    if (vmCount != null) simConfig.withVmCount(vmCount.intValue());
-                }
+            // VMs
+            Map<String, Object> vms = getMap(root, "vms");
+            if (vms != null) {
+                cfg.setVmCount(getInt(vms, "count", cfg.getVmCount()));
+                cfg.setVmMips(getInt(vms, "cpuCapacity", cfg.getVmMips()));
+                cfg.setVmRam(getInt(vms, "ramCapacity", cfg.getVmRam()));
+                cfg.setVmBandwidth(getInt(vms, "bandwidth", cfg.getVmBandwidth()));
+                cfg.setVmSize(getLong(vms, "size", cfg.getVmSize()));
             }
 
-            // Load workload
-            Map<String, Object> workload = config.get("workload");
+            // Workload
+            Map<String, Object> workload = getMap(root, "workload");
             if (workload != null) {
-                Number taskCount = (Number) workload.get("taskCount");
-                if (taskCount != null) simConfig.withTaskCount(taskCount.intValue());
+                cfg.setTaskCount(getInt(workload, "taskCount", cfg.getTaskCount()));
+                cfg.setArrivalRate(getDouble(workload, "arrivalRate", cfg.getArrivalRate()));
 
-                Number arrivalRate = (Number) workload.get("arrivalRate");
-                if (arrivalRate != null) simConfig.withTaskArrivalRate(arrivalRate.doubleValue());
-            }
+                Map<String, Object> comp = getMap(workload, "taskComputeRange");
+                if (comp != null) {
+                    cfg.setTaskComputeMin(getInt(comp, "min", cfg.getTaskComputeMin()));
+                    cfg.setTaskComputeMax(getInt(comp, "max", cfg.getTaskComputeMax()));
+                }
 
-            // Load cost model
-            Map<String, Object> costModel = config.get("costModel");
-            if (costModel != null) {
-                Number compute = (Number) costModel.get("computeCostPerCpuHour");
-                Number bandwidth = (Number) costModel.get("bandwidthCostPerGB");
-                Number latency = (Number) costModel.get("latencyPenaltyPerMs");
-                Number energy = (Number) costModel.get("energyCostPerKWh");
+                Map<String, Object> data = getMap(workload, "taskDataRange");
+                if (data != null) {
+                    cfg.setTaskDataMin(getInt(data, "min", cfg.getTaskDataMin()));
+                    cfg.setTaskDataMax(getInt(data, "max", cfg.getTaskDataMax()));
+                }
 
-                if (compute != null && bandwidth != null && latency != null && energy != null) {
-                    simConfig.withCostModel(
-                        compute.doubleValue(),
-                        bandwidth.doubleValue(),
-                        latency.doubleValue(),
-                        energy.doubleValue()
-                    );
+                Map<String, Object> output = getMap(workload, "taskOutputRange");
+                if (output != null) {
+                    cfg.setTaskOutputMin(getInt(output, "min", cfg.getTaskOutputMin()));
+                    cfg.setTaskOutputMax(getInt(output, "max", cfg.getTaskOutputMax()));
+                }
+
+                Map<String, Object> deadline = getMap(workload, "deadlineRange");
+                if (deadline != null) {
+                    cfg.setDeadlineMin(getDouble(deadline, "min", cfg.getDeadlineMin()));
+                    cfg.setDeadlineMax(getDouble(deadline, "max", cfg.getDeadlineMax()));
                 }
             }
 
-            logger.info("Loaded configuration from {}", filePath);
-            logger.info("Config: {}", simConfig);
+            // Cost model
+            Map<String, Object> cost = getMap(root, "costModel");
+            if (cost != null) {
+                cfg.setComputeCost(getDouble(cost, "compute", cfg.getComputeCost()));
+                cfg.setBandwidthCost(getDouble(cost, "bandwidth", cfg.getBandwidthCost()));
+                cfg.setLatencyPenalty(getDouble(cost, "latencyPenalty", cfg.getLatencyPenalty()));
+                cfg.setEnergyCost(getDouble(cost, "energy", cfg.getEnergyCost()));
+            }
 
-            return simConfig;
-
-        } catch (Exception e) {
-            logger.error("Failed to load configuration from {}", filePath, e);
-            throw new RuntimeException("Configuration loading failed", e);
+            return cfg;
+        }
+        catch (Exception e) {
+            logger.error("Failed to load config, using defaults", e);
+            return cfg;
         }
     }
 
-    public static SimulationConfig loadDefaults() {
-        return new SimulationConfig();
+    // ===== Helpers =====
+
+    private static Map<String, Object> getMap(Map<String, Object> root, String key) {
+        Object o = root.get(key);
+        return (o instanceof Map ? (Map<String, Object>) o : null);
+    }
+
+    private static int getInt(Map<String, Object> m, String k, int def) {
+        Object o = m.get(k);
+        return (o instanceof Number) ? ((Number)o).intValue() : def;
+    }
+
+    private static long getLong(Map<String, Object> m, String k, long def) {
+        Object o = m.get(k);
+        return (o instanceof Number) ? ((Number)o).longValue() : def;
+    }
+
+    private static double getDouble(Map<String, Object> m, String k, double def) {
+        Object o = m.get(k);
+        return (o instanceof Number) ? ((Number)o).doubleValue() : def;
+    }
+
+    private static String getString(Map<String, Object> m, String k, String def) {
+        Object o = m.get(k);
+        return o != null ? o.toString() : def;
     }
 }

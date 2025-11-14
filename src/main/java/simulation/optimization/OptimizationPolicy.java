@@ -1,21 +1,26 @@
 package simulation.optimization;
 
-import java.util.List;
-
 import simulation.model.MECServer;
 import simulation.model.Task;
+import simulation.model.UAVEntity;
+import java.util.List;
 
+/**
+ * Optimization Policy Interface
+ * Defines contract for offloading decision policies
+ */
 public interface OptimizationPolicy {
+    
     /**
-     * Make optimization decision for a task
+     * Make offloading decision for a task
      */
     CostOptimizer.OffloadingDecision makeDecision(Task task, List<MECServer> servers);
-
+    
     /**
-     * Update policy based on current simulation state
+     * Update policy based on system state
      */
     void update(double simulationTime, List<MECServer> servers);
-
+    
     /**
      * Get policy name
      */

@@ -1,6 +1,5 @@
 package simulation.core;
 
-import org.cloudbus.cloudsim.brokers.DatacenterBroker;
 import org.cloudbus.cloudsim.brokers.DatacenterBrokerSimple;
 import org.cloudbus.cloudsim.cloudlets.Cloudlet;
 import org.cloudbus.cloudsim.cloudlets.CloudletSimple;
@@ -14,194 +13,274 @@ import org.cloudbus.cloudsim.resources.PeSimple;
 import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelFull;
 import org.cloudbus.cloudsim.vms.Vm;
 import org.cloudbus.cloudsim.vms.VmSimple;
-import org.cloudsimplus.listeners.CloudletEventInfo;
-import org.cloudsimplus.listeners.VmEventInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import simulation.analysis.AnalysisReport;
 import simulation.analysis.MetricsExporter;
 import simulation.analysis.StatisticalAnalyzer;
-import simulation.events.AbstractEventListener;
 import simulation.events.MetricsCollector;
-import simulation.model.CostModel;
-import simulation.model.MECServer;
-import simulation.model.MetricEntry;
-import simulation.optimization.CostOptimizer;
+import simulation.model.*;
+import simulation.optimization.*;
 
 import java.util.*;
 
-/**
- * UAV-MEC Simulation Core – CloudSim Plus 7.x compatible.
- */
 public class UAVMECSimulation {
+
     private static final Logger logger = LoggerFactory.getLogger(UAVMECSimulation.class);
 
     private final CloudSim simulation;
-    private final DatacenterBroker broker;
-    private final CostOptimizer optimizer;
-    private final MetricsCollector metricsCollector;
+    private final DatacenterBrokerSimple broker;
     private final SimulationConfig config;
+
+    private final CostOptimizer optimizer;
     private final List<Vm> vmList = new ArrayList<>();
-    private final List<Cloudlet> cloudletList = new ArrayList<>();
+    private final List<Cloudlet> cloudlets = new ArrayList<>();
     private final List<MECServer> mecServers = new ArrayList<>();
-    private long startTime;
+    private final Map<Cloudlet, Task> cloudletTaskMap = new HashMap<>();
 
-    public UAVMECSimulation(SimulationConfig config) {
-        this.config = config;
+    private long startClock;
+    private int tasksCompleted = 0;
+    private int tasksWithinDeadline = 0;
+    private double totalLatency = 0;
+    private double totalCost = 0;
+
+    public UAVMECSimulation(SimulationConfig cfg) {
+        this.config = cfg;
         this.simulation = new CloudSim();
-        simulation.terminateAt(1000); // ✅ Stop after 1000 seconds of simulated time
-        this.metricsCollector = new MetricsCollector(10_000);
-
-        CostModel costModel = new CostModel(
-                config.getComputeCost(),
-                config.getBandwidthCost(),
-                config.getLatencyPenalty(),
-                config.getEnergyCost()
-        );
-        this.optimizer = new CostOptimizer(costModel, metricsCollector);
+        simulation.terminateAt(cfg.getSimulationTime());
         this.broker = new DatacenterBrokerSimple(simulation);
+
+        this.optimizer = new CostOptimizer(
+            new CostModel(cfg.getComputeCost(), cfg.getBandwidthCost(), cfg.getLatencyPenalty(), cfg.getEnergyCost()),
+            new MetricsCollector(10_000)
+        );
     }
 
-    /** Build and run the simulation */
     public void run() {
-        logger.info("Starting UAV-MEC Simulation: {}", config);
-        startTime = System.currentTimeMillis();
+        logger.info("Starting UAV-MEC Simulation…");
+        startClock = System.currentTimeMillis();
 
-        try {
-            Datacenter datacenter = createDatacenter();
-            logger.info("Created datacenter with hosts");
+        Datacenter dc = createDatacenter();
+        logger.info("✓ Datacenter created with {} hosts", config.getHostCount());
 
-            registerEventListeners();
-            logger.info("Registered event listeners");
+        createVMs();
+        logger.info("✓ Created {} VMs for MEC servers", vmList.size());
 
-            createVms();
-            logger.info("Created {} VMs", vmList.size());
+        createCloudlets();
+        logger.info("✓ Generated {} IoT tasks", cloudlets.size());
 
-            createCloudlets();
-            logger.info("Created {} tasks", cloudletList.size());
+        broker.submitVmList(vmList);
+        broker.submitCloudletList(cloudlets);
+        logger.info("✓ Submitted {} cloudlets to broker", cloudlets.size());
 
-            broker.submitVmList(vmList);
-            broker.submitCloudletList(cloudletList);
-            logger.info("Submitted VMs and cloudlets to broker");
+        // ✅ CORRECTED: Use CloudSim native method instead of broker listener
+        simulation.start();
+        
+        logger.info("✓ Simulation completed");
 
-            logger.info("Starting simulation execution...");
-            simulation.start();
-            logger.info("Simulation completed");
-
-            processResults();
-
-        } catch (Exception e) {
-            logger.error("Simulation failed", e);
-            throw new RuntimeException("Simulation execution failed", e);
-        } finally {
-            metricsCollector.shutdown();
-        }
+        // After simulation completes, process results from finished cloudlets
+        processResults();
+        exportResults();
     }
 
-    /** Create datacenter with hosts */
     private Datacenter createDatacenter() {
-        List<Host> hostList = new ArrayList<>();
-        for (int i = 0; i < config.getVmCount(); i++) {
-            hostList.add(createHost());
-            mecServers.add(new MECServer("MEC_" + i, 10_000.0, 4096.0, 100_000.0));
+        List<Host> hosts = new ArrayList<>();
+
+        for (int i = 0; i < config.getHostCount(); i++) {
+            List<Pe> peList = new ArrayList<>();
+            for (int j = 0; j < config.getHostPes(); j++)
+                peList.add(new PeSimple(config.getHostMips()));
+
+            Host h = new HostSimple(config.getHostRam(),
+                    config.getHostBandwidth(),
+                    config.getHostStorage(),
+                    peList);
+            hosts.add(h);
+
+            MECServer server = new MECServer("MEC_" + i,
+                    config.getHostMips(),
+                    config.getHostRam(),
+                    config.getHostStorage());
+            mecServers.add(server);
+            optimizer.registerServer(server);
         }
-        return new DatacenterSimple(simulation, hostList);
+
+        return new DatacenterSimple(simulation, hosts);
     }
 
-    /** Create individual host */
-    private Host createHost() {
-        long mips = 10_000, ram = 8192, storage = 1_000_000, bandwidth = 10_000;
-        List<Pe> peList = Arrays.asList(new PeSimple(mips), new PeSimple(mips));
-        return new HostSimple(ram, bandwidth, storage, peList);
-    }
-
-    /** Register event listeners */
-    private void registerEventListeners() {
-        AbstractEventListener listener = new AbstractEventListener(metricsCollector);
-
-        simulation.addOnEventProcessingListener(event -> {
-            Object data = event.getData();
-            if (data instanceof CloudletEventInfo) {
-                // Extract the Cloudlet object from the event info
-                listener.onCloudletProcessing(((CloudletEventInfo) data).getCloudlet());
-            } else if (data instanceof VmEventInfo) {
-                // Extract the VM object from the event info
-                listener.onVmCreated(((VmEventInfo) data).getVm());
-            }
-        });
-
-        simulation.addOnSimulationStartListener(ev -> listener.onSimulationStart());
-// 7.1.2 doesn’t expose a “stop” event; use pause as the nearest hook
-        simulation.addOnSimulationPauseListener(ev -> listener.onSimulationEnd());
-
-    }
-
-    /** Create VMs */
-    private void createVms() {
-        long mips = 20000, ram = 8192;
-        int bw = 10000000;
+    private void createVMs() {
         for (int i = 0; i < config.getVmCount(); i++) {
-            Vm vm = new VmSimple(mips, 1).setRam(ram).setBw(bw);
+            Vm vm = new VmSimple(config.getVmMips(), 1)
+                    .setRam(config.getVmRam())
+                    .setSize(config.getVmSize())
+                    .setBw(config.getVmBandwidth());
             vmList.add(vm);
         }
     }
 
-    /** Create Cloudlets (tasks) */
     private void createCloudlets() {
         Random rnd = new Random(config.getRandomSeed());
-        var util = new UtilizationModelFull();
+        UtilizationModelFull util = new UtilizationModelFull();
+
+        double arrivalTime = 0;
+
         for (int i = 0; i < config.getTaskCount(); i++) {
-            long length = 1000 + rnd.nextInt(9000);
-            long fileSize = 100 + rnd.nextInt(900);
-            long outputSize = 50 + rnd.nextInt(450);
-            Cloudlet c = new CloudletSimple(length, 1)
-                    .setFileSize(fileSize)
-                    .setOutputSize(outputSize)
+            arrivalTime += -Math.log(1 - rnd.nextDouble()) / config.getArrivalRate();
+
+            long compute = config.getTaskComputeMin()
+                    + rnd.nextInt((int)(config.getTaskComputeMax() - config.getTaskComputeMin()));
+            long data = config.getTaskDataMin()
+                    + rnd.nextInt((int)(config.getTaskDataMax() - config.getTaskDataMin()));
+            long outSize = config.getTaskOutputMin()
+                    + rnd.nextInt((int)(config.getTaskOutputMax() - config.getTaskOutputMin()));
+            double deadline = config.getDeadlineMin()
+                    + rnd.nextDouble() * (config.getDeadlineMax() - config.getDeadlineMin());
+
+            Task t = new Task("TASK_" + i, arrivalTime, compute, data, deadline);
+
+            Cloudlet c = new CloudletSimple(compute, 1)
+                    .setFileSize(data)
+                    .setOutputSize(outSize)
                     .setUtilizationModelCpu(util)
                     .setUtilizationModelRam(util)
                     .setUtilizationModelBw(util);
-            cloudletList.add(c);
+
+            c.setSubmissionDelay(arrivalTime);
+            c.setBroker(broker);
+
+            cloudlets.add(c);
+            cloudletTaskMap.put(c, t);
+            optimizer.registerTask(t);
         }
     }
 
-    /** Process simulation results */
     private void processResults() {
-        long execTime = System.currentTimeMillis() - startTime;
-        logger.info("\n=== Simulation Results ===");
-        logger.info("Execution time: {} ms", execTime);
-        logger.info("Metrics collected: {}", metricsCollector.getTotalMetricsCount());
-        logger.info("Optimization decisions: {}", optimizer.getOptimizationDecisionsCount());
+        List<Cloudlet> finishedCloudlets = broker.getCloudletFinishedList();
+        logger.info("Processing {} finished cloudlets", finishedCloudlets.size());
 
-        List<MetricEntry> all = metricsCollector.getAllMetrics();
-        String ts = String.valueOf(System.currentTimeMillis());
-        String csv = "results/metrics_" + ts + ".csv";
-        String json = "results/analysis_" + ts + ".json";
-        String report = "results/report_" + ts + ".txt";
-
-        MetricsExporter.exportToCSV(csv, all);
-        MetricsExporter.exportToJSON(json, all);
-
-        String summary = MetricsExporter.generateSummaryReport(all);
-        try {
-            java.nio.file.Files.write(java.nio.file.Paths.get(report), summary.getBytes());
-        } catch (Exception e) {
-            logger.error("Failed to write report file", e);
+        for (Cloudlet cloudlet : finishedCloudlets) {
+            if (cloudlet == null || !cloudlet.isFinished()) continue;
+            
+            Task task = cloudletTaskMap.get(cloudlet);
+            
+            // Count ALL finished cloudlets, even if no task mapping
+            double executionTime = cloudlet.getFinishTime() - cloudlet.getSubmissionDelay();
+            tasksCompleted++;
+            totalLatency += executionTime;
+            
+            if (task != null) {
+                double cost = calculateTaskCost(cloudlet, task);
+                totalCost += cost;
+                
+                if (executionTime <= task.getDeadline()) {
+                    tasksWithinDeadline++;
+                }
+            } else {
+                totalCost += 0.1; // Default cost for unmapped
+            }
         }
-        StatisticalAnalyzer.analyzeAndPrintMetrics(all);
-        logger.info("Results exported to results/ directory");
+        
+        logger.info("✓ Processed: {}/{} tasks, {} met deadline",
+            tasksCompleted, config.getTaskCount(), tasksWithinDeadline);
     }
 
-    /** Entry point */
+
+    private double calculateTaskCost(Cloudlet cloudlet, Task task) {
+        double executionTime = cloudlet.getFinishTime() - cloudlet.getSubmissionDelay();
+        double computeTime = (double) cloudlet.getLength() / (double) cloudlet.getVm().getMips();
+        double dataCost = (cloudlet.getFileSize() + cloudlet.getOutputSize()) * 0.001; // per MB
+        double computeCost = computeTime * 0.1; // per ms
+        double latencyPenalty = (executionTime > task.getDeadline()) ? 
+                               (executionTime - task.getDeadline()) * 0.01 : 0;
+        
+        return dataCost + computeCost + latencyPenalty;
+    }
+
+    private void exportResults() {
+        String ts = String.valueOf(System.currentTimeMillis());
+        long duration = System.currentTimeMillis() - startClock;
+
+        try {
+            // Create metric entries from results
+            List<MetricEntry> allMetrics = createMetricsFromResults();
+
+            // Export to files
+            MetricsExporter.exportToCSV(
+                config.getResultsDirectory() + "/metrics_" + ts + ".csv", 
+                allMetrics
+            );
+            MetricsExporter.exportToJSON(
+                config.getResultsDirectory() + "/analysis_" + ts + ".json", 
+                allMetrics
+            );
+
+            // Print summary
+            logger.info("\n" + "=".repeat(70));
+            logger.info("SIMULATION RESULTS SUMMARY");
+            logger.info("=".repeat(70));
+            logger.info("Total Execution Time: {} ms", duration);
+            logger.info("Tasks Completed: {} / {}", tasksCompleted, config.getTaskCount());
+            
+            if (tasksCompleted > 0) {
+                double avgLatency = totalLatency / tasksCompleted;
+                double avgCost = totalCost / tasksCompleted;
+                double slaCompliance = (100.0 * tasksWithinDeadline / tasksCompleted);
+                
+                logger.info(String.format("Tasks Meeting Deadline: %d (SLA Compliance: %.2f%%)", tasksWithinDeadline, slaCompliance));
+                logger.info(String.format("Average Latency: %.2f ms", avgLatency));
+                logger.info(String.format("Average Cost: $%.4f", avgCost));
+                logger.info(String.format("Total Cost: $%.2f", totalCost));
+
+            }
+
+            
+            logger.info("Results exported to: {}/", config.getResultsDirectory());
+            logger.info("=".repeat(70) + "\n");
+
+        } catch (Exception e) {
+            logger.error("Failed to export results", e);
+        }
+    }
+
+    private List<MetricEntry> createMetricsFromResults() {
+        List<MetricEntry> metrics = new ArrayList<>();
+        List<Cloudlet> finishedCloudlets = broker.getCloudletFinishedList();
+
+        for (Cloudlet cloudlet : finishedCloudlets) {
+            double executionTime = cloudlet.getFinishTime() - cloudlet.getSubmissionDelay();
+            boolean metDeadline = false;
+            double cost = 0.1;
+            Task task = cloudletTaskMap.get(cloudlet);
+
+            if (task != null) {
+                metDeadline = executionTime <= task.getDeadline();
+                cost = calculateTaskCost(cloudlet, task);
+            }
+
+            MetricEntry metric = new MetricEntry(
+                "CLOUDLET_FINISHED",
+                cloudlet.getId(),
+                metDeadline,
+                (long) cloudlet.getFinishTime()
+            );
+            metric.setLatency(executionTime);
+            metric.setCost(cost);
+            metrics.add(metric);
+        }
+        return metrics;
+    }
+
     public static void main(String[] args) {
-        SimulationConfig config = new SimulationConfig()
-                .withSimulationTime(3600.0)
-                .withVmCount(500)
-                .withTaskCount(200)
-                .withTaskArrivalRate(0.1)
-                .withCostModel(0.0001, 0.00001, 0.01, 0.1)
-                .withRandomSeed(42);
-
-        new UAVMECSimulation(config).run();
-
+        try {
+            String configPath = args.length > 0 ? args[0] : "src/main/resources/config.yaml";
+            SimulationConfig config = ConfigurationLoader.loadFromYAML(configPath);
+            logger.info("Configuration loaded: {}", config);
+            
+            new UAVMECSimulation(config).run();
+        } catch (Exception e) {
+            logger.error("Fatal error", e);
+            System.exit(1);
+        }
     }
 }
