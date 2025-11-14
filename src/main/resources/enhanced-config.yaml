@@ -1,0 +1,100 @@
+simulationTime: 1000.0
+randomSeed: 42
+resultsDirectory: "./results"
+
+datacenter:
+  hostCount: 5
+  cpuCapacity: 10000     # CPU per host, MIPS
+  pes: 4                 # CPU cores per host
+  ram: 16384             # RAM per host, MB
+  bandwidth: 100000
+  storage: 1000000
+
+vms:
+  count: 10
+  types:                 # Heterogeneous VMs for realism
+    - cpu: 2500
+      ram: 2048
+      bandwidth: 10000
+      size: 10000
+    - cpu: 2000
+      ram: 4096
+      bandwidth: 8000
+      size: 8000
+
+workload:
+  taskCount: 100
+  arrivalRate: 0.5
+  taskTypes:
+    - type: sensor
+      percent: 30
+      computeRange: { min: 500, max: 2000 }
+      dataRange:    { min: 100, max: 2000 }
+      outputRange:  { min: 10,  max: 200 }
+      deadlineRange: { min: 2.0, max: 8.0 }
+    - type: video
+      percent: 40
+      computeRange: { min: 1500, max: 5000 }
+      dataRange:    { min: 1000, max: 5000 }
+      outputRange:  { min: 500, max: 1000 }
+      deadlineRange: { min: 3.0, max: 10.0 }
+    - type: image
+      percent: 30
+      computeRange: { min: 1000, max: 3000 }
+      dataRange:    { min: 500, max: 3000 }
+      outputRange:  { min: 100, max: 500 }
+      deadlineRange: { min: 2.0, max: 5.0 }
+  priorities: [0.2, 0.6, 0.2] # Task priorities by type
+
+costModel:
+  compute: 0.05
+  bandwidth: 0.01
+  latencyPenalty: 0.001
+  energy: 0.02
+
+uav:
+  count: auto       # Or explicit: 0 disables, N enables fixed
+  altitude: 100.0
+  capacityPerNode: 20
+  sinrThreshold: 10.0
+  dynamicClustering: true
+
+optimization:
+  revenueParameter: 0.1
+  costParameter: 0.01
+  aggressionLevel: 0.5
+  iterations: 100
+  strategy: "greedy"       # Or: random, optimal, adaptive
+
+area:
+  width: 1000.0
+  height: 1000.0
+  zones:                   # Multi-zone scenario
+    - name: "campus"
+      hosts: 3
+      uavs: 2
+    - name: "urban"
+      hosts: 2
+      uavs: 1
+
+network:
+  latencyModel: "distance"        # or "fixed", "random"
+  congestionModel: "linear"       # or "none", "burst"
+  baseRttMs: 8.0
+  suddenCongestionEvents: 2       # Number of random spikes
+
+sla:
+  tiers:
+    - name: "gold"
+      deadlineFactor: 0.75
+      strict: true
+    - name: "silver"
+      deadlineFactor: 1.0
+      strict: false
+    - name: "bronze"
+      deadlineFactor: 1.25
+      strict: false
+
+logging:
+  outputLevel: "info"       # or "debug"
+  metricsDetail: "full"     # or "summary"

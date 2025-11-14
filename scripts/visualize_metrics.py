@@ -1,11 +1,4 @@
 #!/usr/bin/env python3
-"""
-visualize_metrics.py - Robust CSV metric visualizer for UAV-MEC simulation.
-
-Usage:
-    python visualize_metrics.py metrics.csv
-    python visualize_metrics.py metrics.csv --out analysis.png --show --verbose
-"""
 
 from pathlib import Path
 import argparse
